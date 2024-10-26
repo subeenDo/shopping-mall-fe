@@ -1,4 +1,5 @@
 # 쇼핑몰 프로젝트 
+https://do-shopping-mall-002.netlify.app/
 
 <img width="1502" alt="KakaoTalk_Photo_2023-08-09-10-42-10" src="https://github.com/legobitna/noona-shoppingmall-fe/assets/21190318/a2091646-7aee-46a4-9ebb-10d413c7da03">
 
