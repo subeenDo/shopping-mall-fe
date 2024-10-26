@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -37,9 +37,16 @@ const Navbar = ({ user }) => {
       navigate(`?name=${event.target.value}`);
     }
   };
+
   const handleLogout = () => {
-    dispatch(logout());
+    const confirmLogout = window.confirm("로그아웃 하시겠습니까?");
+    if (confirmLogout) {
+      sessionStorage.removeItem("token");
+      dispatch(logout());
+      navigate("/login");
+    }
   };
+  
   return (
     <div>
       {showSearchBox && (
@@ -73,7 +80,8 @@ const Navbar = ({ user }) => {
           ))}
         </div>
       </div>
-      {user && user.level === "admin" && (
+      {/* {user&& user.level === "admin" && ( */}
+           {sessionStorage.getItem("token")&& user.level === "admin" && (
         <Link to="/admin/product?page=1" className="link-area">
           Admin page
         </Link>
@@ -85,7 +93,8 @@ const Navbar = ({ user }) => {
 
         <div>
           <div className="display-flex">
-            {user ? (
+            {/* {user ? ( */}
+            {sessionStorage.getItem("token") ? (
               <div onClick={handleLogout} className="nav-icon">
                 <FontAwesomeIcon icon={faUser} />
                 {!isMobile && (

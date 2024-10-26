@@ -16,11 +16,20 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+    //이미 로그인을 한 유저는 /login 페이지로 갈 수 없다.
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (user || token) {
+      navigate("/"); // 이미 로그인한 경우 홈으로 리디렉션
+    }
+  }, [user, navigate]);
+
   useEffect(() => {
     if (loginError) {
       dispatch(clearErrors());
     }
   }, [navigate]);
+
   const handleLoginWithEmail = (event) => {
     event.preventDefault();
     dispatch(loginWithEmail({ email, password }));
@@ -30,9 +39,9 @@ const Login = () => {
     //구글 로그인 하기
   };
 
-  if (user) {
-    navigate("/");
-  }
+  // if (user) {
+  //  navigate("/"); //강사님ver 이미 로그인을 한 유저는 /login 페이지로 갈 수 없다.
+  // }
   return (
     <>
       <Container className="login-area">
@@ -66,7 +75,7 @@ const Login = () => {
               Login
             </Button>
             <div>
-              아직 계정이 없으세요?<Link to="/register">회원가입 하기</Link>{" "}
+              아직 계정이 없으세요?  <Link to="/register">회원가입 하기</Link>{" "}
             </div>
           </div>
 
