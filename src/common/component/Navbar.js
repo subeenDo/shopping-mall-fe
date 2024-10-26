@@ -42,6 +42,7 @@ const Navbar = ({ user }) => {
     const confirmLogout = window.confirm("로그아웃 하시겠습니까?");
     if (confirmLogout) {
       dispatch(logout());
+      window.confirm("로그아웃되었습니다.");
       navigate("/");
     }
   };
