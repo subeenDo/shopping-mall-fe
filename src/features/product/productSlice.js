@@ -82,20 +82,20 @@ const productSlice = createSlice({
       state.loading =  false;
       state.error = action.payload;
       state.success = false;
-    })
-    .addCase(getProductList.pending, (state, action) => { 
-      state.loading = true;
-    })
-    .addCase(getProductList.fulfilled, (state, action) => { 
-      state.loading = false;
-      state.productList = action.payload.data;
-      state.error = "";
-    })
-    .addCase(getProductList.rejected, (state, action) => { 
-      state.loading = false;
-      state.error = action.payload;
+    //})
+  //   .addCase(getProductList.pending, (state, action) => { 
+  //     state.loading = true;
+  //   })
+  //   .addCase(getProductList.fulfilled, (state, action) => { 
+  //     state.loading = false;
+  //     state.productList = action.payload.data;
+  //     state.error = "";
+  //   })
+  //   .addCase(getProductList.rejected, (state, action) => { 
+  //     state.loading = false;
+  //     state.error = action.payload;
     });
-  },
+ },
 });
 
 export const { setSelectedProduct, setFilteredList, clearError } =
