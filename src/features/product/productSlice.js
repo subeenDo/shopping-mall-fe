@@ -9,7 +9,7 @@ export const getProductList = createAsyncThunk(
     try{
       const response = await api.get("/product");
       if(response.status!==200) throw new Error(response.error);
-      return response.data.data;
+      return response.data.products;
     }catch(error){
       rejectWithValue(error.error);
     }
@@ -82,18 +82,18 @@ const productSlice = createSlice({
       state.loading =  false;
       state.error = action.payload;
       state.success = false;
-    //})
-  //   .addCase(getProductList.pending, (state, action) => { 
-  //     state.loading = true;
-  //   })
-  //   .addCase(getProductList.fulfilled, (state, action) => { 
-  //     state.loading = false;
-  //     state.productList = action.payload.data;
-  //     state.error = "";
-  //   })
-  //   .addCase(getProductList.rejected, (state, action) => { 
-  //     state.loading = false;
-  //     state.error = action.payload;
+    })
+    .addCase(getProductList.pending, (state, action) => { 
+      state.loading = true;
+    })
+    .addCase(getProductList.fulfilled, (state, action) => { 
+      state.loading = false;
+      state.productList = action.payload;
+      state.error = "";
+    })
+    .addCase(getProductList.rejected, (state, action) => { 
+      state.loading = false;
+      state.error = action.payload;
     });
  },
 });
