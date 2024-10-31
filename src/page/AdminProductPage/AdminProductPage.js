@@ -41,8 +41,8 @@ const AdminProductPage = () => {
 
   //상품리스트 가져오기 (url쿼리 맞춰서)
   useEffect(()=>{
-    dispatch(getProductList());
-  },[])
+    dispatch(getProductList(searchQuery));
+  },[searchQuery, dispatch]);
 
   useEffect(() => {
     //검색어나 페이지가 바뀌면 url바꿔주기 (검색어또는 페이지가 바뀜 => url 바꿔줌=> url쿼리 읽어옴=> 이 쿼리값 맞춰서  상품리스트 가져오기)
@@ -66,6 +66,12 @@ const AdminProductPage = () => {
 
   const handlePageClick = ({ selected }) => {
     //  쿼리에 페이지값 바꿔주기
+    setSearchQuery((prev) => ({ ...prev, page: selected + 1 }));
+  };
+
+  const handleDialogSuccess = () => {
+    // 리스트 새로고침
+    dispatch(getProductList(searchQuery));
   };
 
   return (
@@ -116,6 +122,7 @@ const AdminProductPage = () => {
         mode={mode}
         showDialog={showDialog}
         setShowDialog={setShowDialog}
+        onSuccess={handleDialogSuccess}
       />
     </div>
   );

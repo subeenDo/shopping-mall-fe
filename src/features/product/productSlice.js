@@ -82,13 +82,15 @@ const productSlice = createSlice({
       state.loading =  false;
       state.error = action.payload;
       state.success = false;
+    
     })
     .addCase(getProductList.pending, (state, action) => { 
       state.loading = true;
     })
     .addCase(getProductList.fulfilled, (state, action) => { 
       state.loading = false;
-      state.productList = action.payload;
+      state.productList = (Array.isArray(action.payload) ? action.payload : [action.payload])
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
       state.error = "";
     })
     .addCase(getProductList.rejected, (state, action) => { 

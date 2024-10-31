@@ -21,7 +21,7 @@ const InitialFormData = {
   price: 0,
 };
 
-const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
+const NewItemDialog = ({ mode, showDialog, setShowDialog, onSuccess }) => {
   const { error, success, selectedProduct } = useSelector(
     (state) => state.product
   );
@@ -33,7 +33,10 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   const [stockError, setStockError] = useState(false);
 
   useEffect(() => {
-    if (success) setShowDialog(false);
+    if (success) {
+      setShowDialog(false);
+      if (onSuccess) onSuccess();
+    }
   }, [success]);
 
   useEffect(() => {
