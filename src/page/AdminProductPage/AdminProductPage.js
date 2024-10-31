@@ -6,20 +6,18 @@ import ReactPaginate from "react-paginate";
 import SearchBox from "../../common/component/SearchBox";
 import NewItemDialog from "./component/NewItemDialog";
 import ProductTable from "./component/ProductTable";
-
 import {
   getProductList,
   deleteProduct,
   setSelectedProduct,
 } from "../../features/product/productSlice";
 
+
 const AdminProductPage = () => {
   const navigate = useNavigate();
-  const [query] = useSearchParams();
+  const [query] = useSearchParams();  // url 파라미터 읽어오기
   const dispatch = useDispatch();
-  const { productList, totalPageNum, loading } = useSelector(
-    (state) => state.product
-  );
+  const { productList, totalPageNum } = useSelector((state) => state.product);
   const [showDialog, setShowDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState({
     page: query.get("page") || 1,
@@ -40,12 +38,19 @@ const AdminProductPage = () => {
   ];
 
   //상품리스트 가져오기 (url쿼리 맞춰서)
-  useEffect(()=>{
-    dispatch(getProductList(searchQuery));
-  },[searchQuery, dispatch]);
+  useEffect(() => {
+    dispatch(getProductList({...searchQuery}));
+  }, [showDialog, query]);
 
   useEffect(() => {
     //검색어나 페이지가 바뀌면 url바꿔주기 (검색어또는 페이지가 바뀜 => url 바꿔줌=> url쿼리 읽어옴=> 이 쿼리값 맞춰서  상품리스트 가져오기)
+    if(searchQuery.name === ""){
+      delete searchQuery.name;
+    }
+    const params = new URLSearchParams(searchQuery);
+    const query = params.toString();
+    navigate(`?${query}`);
+
   }, [searchQuery]);
 
   const deleteItem = (id) => {
@@ -60,18 +65,14 @@ const AdminProductPage = () => {
   const handleClickNewItem = () => {
     //new 모드로 설정하고
     setMode("new");
+    
     // 다이얼로그 열어주기
     setShowDialog(true);
   };
 
   const handlePageClick = ({ selected }) => {
     //  쿼리에 페이지값 바꿔주기
-    setSearchQuery((prev) => ({ ...prev, page: selected + 1 }));
-  };
-
-  const handleDialogSuccess = () => {
-    // 리스트 새로고침
-    dispatch(getProductList(searchQuery));
+    setSearchQuery({...searchQuery, page: selected + 1});
   };
 
   return (
@@ -96,33 +97,32 @@ const AdminProductPage = () => {
           openEditForm={openEditForm}
         />
         <ReactPaginate
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={100}
-          forcePage={searchQuery.page - 1}
-          previousLabel="< previous"
-          renderOnZeroPageCount={null}
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName="page-item"
-          previousLinkClassName="page-link"
-          nextClassName="page-item"
-          nextLinkClassName="page-link"
-          breakLabel="..."
-          breakClassName="page-item"
-          breakLinkClassName="page-link"
-          containerClassName="pagination"
-          activeClassName="active"
-          className="display-center list-style-none"
-        />
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              pageCount={totalPageNum}
+              forcePage={searchQuery.page - 1}
+              previousLabel="< previous"
+              renderOnZeroPageCount={null}
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakLabel="..."
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination"
+              activeClassName="active"
+              className="display-center list-style-none"
+            />
       </Container>
 
       <NewItemDialog
         mode={mode}
         showDialog={showDialog}
         setShowDialog={setShowDialog}
-        onSuccess={handleDialogSuccess}
       />
     </div>
   );

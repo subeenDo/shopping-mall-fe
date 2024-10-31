@@ -6,15 +6,18 @@ import { showToastMessage } from "../common/uiSlice";
 export const getProductList = createAsyncThunk(
   "products/getProductList",
   async (query, { rejectWithValue }) => {
-    try{
-      const response = await api.get("/product");
-      if(response.status!==200) throw new Error(response.error);
-      return response.data.products;
-    }catch(error){
-      rejectWithValue(error.error);
+    try {
+      const response = await api.get("/product", { params: { ...query } });
+      if (response.status !== 200) throw new Error(response.error);
+
+      console.log("rr",response); // 응답 데이터 확인
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   }
 );
+
 
 export const getProductDetail = createAsyncThunk(
   "products/getProductDetail",
@@ -26,11 +29,14 @@ export const createProduct = createAsyncThunk(
   async (formData, { dispatch, rejectWithValue }) => {
     try{
       const response = await api.post("/product", formData);
-      if(response.status!=200) throw new Error (response.error);
+
+      if (response.status !== 200) {
+        throw new Error(response.error);
+      }
+      dispatch(showToastMessage({ message: "Success add new Item", status: "success" }));
       return response.data.data;
-    }catch(error){
-      dispatch(showToastMessage({message:"상품 생성 실패", status:"error"}))
-      return rejectWithValue(error.error);
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -45,6 +51,7 @@ export const editProduct = createAsyncThunk(
   async ({ id, ...formData }, { dispatch, rejectWithValue }) => {}
 );
 
+
 // 슬라이스 생성
 const productSlice = createSlice({
   name: "products",
@@ -55,6 +62,8 @@ const productSlice = createSlice({
     error: "",
     totalPageNum: 1,
     success: false,
+    categories: [],
+    categoryLoading: false,
   },
   reducers: {
     setSelectedProduct: (state, action) => {
@@ -70,34 +79,34 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    .addCase(createProduct.pending,(state,action)=>{
-      state.loading =  true;
-    })
-    .addCase(createProduct.fulfilled,(state,action)=>{
-      state.loading =  false;
-      state.error = "";
-      state.success = true;
-    })
-    .addCase(createProduct.rejected,(state,action)=>{
-      state.loading =  false;
-      state.error = action.payload;
-      state.success = false;
-    
-    })
-    .addCase(getProductList.pending, (state, action) => { 
+    .addCase(createProduct.pending, (state) => {
       state.loading = true;
     })
-    .addCase(getProductList.fulfilled, (state, action) => { 
-      state.loading = false;
-      state.productList = (Array.isArray(action.payload) ? action.payload : [action.payload])
-        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    .addCase(createProduct.fulfilled, (state, action) => {
       state.error = "";
+      state.loading = false;
+      state.success = true;
     })
-    .addCase(getProductList.rejected, (state, action) => { 
+    .addCase(createProduct.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    });
- },
+      state.success = false;
+    })
+    .addCase(getProductList.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(getProductList.fulfilled, (state, action) => {
+      state.loading = false;
+      state.productList = action.payload.products;
+      state.totalPageNum = action.payload.totalPageNum;
+      //console.log('Total Page Num:', state.totalPageNum);
+      state.error = "";
+    })
+    .addCase(getProductList.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+  },
 });
 
 export const { setSelectedProduct, setFilteredList, clearError } =
