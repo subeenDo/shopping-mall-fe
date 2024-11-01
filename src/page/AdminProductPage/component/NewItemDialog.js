@@ -31,11 +31,14 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, onSuccess }) => {
   const [stock, setStock] = useState([]);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
 
   useEffect(() => {
     if (success) {
-      setShowDialog(false);
+      setShowDialog(false);  // 모달을 닫음
       if (onSuccess) onSuccess();
+      dispatch(clearError());  // error와 success 상태 초기화
     }
   }, [success]);
 
@@ -60,16 +63,28 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, onSuccess }) => {
   }, [showDialog]);
 
   const handleClose = () => {
-    //모든걸 초기화시키고;
-    // 다이얼로그 닫아주기
+    setFormData({ ...InitialFormData });
+    setStock([]); 
+    setStockError(false); 
+    setImageError(false); 
+    setShowDialog(false); 
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("formData", formData);
+    //console.log("formData", formData);
 
     //재고를 입력했는지 확인, 아니면 에러
     if(stock.length===0) return setStockError(true);
+
+     // 이미지 업로드 여부 확인
+    if(!formData.image) {
+      setImageError(true);
+      return;
+    } else {
+      setImageError(false);
+    }
     
     // 재고를 배열에서 객체로 바꿔주기
     const totalStock = stock.reduce((total, item)=>{
@@ -82,6 +97,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, onSuccess }) => {
       dispatch(createProduct({...formData, stock: totalStock}));
     } else {
       // 상품 수정하기
+      dispatch(editProduct({...formData, stock: totalStock, id:selectedProduct._id}))
     }
   };
 
@@ -256,11 +272,14 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog, onSuccess }) => {
         <Form.Group className="mb-3" controlId="Image" required>
           <Form.Label>Image</Form.Label>
           <CloudinaryUploadWidget uploadImage={uploadImage} />
+          {imageError && (
+              <Alert variant="danger">이미지를 업로드해주세요</Alert>
+          )}
           <img
-            id="uploadedimage"
-            src={formData.image}
-            className="upload-image mt-2"
-            alt="uploadedimage"
+              id="uploadedimage"
+              src={formData.image}
+              className="upload-image mt-2"
+              alt="uploadedimage"
           />
         </Form.Group>
 
