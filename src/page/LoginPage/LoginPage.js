@@ -42,11 +42,19 @@ const Login = () => {
       .unwrap()
       .then(() => {
         setLoading(false); 
+        const redirectUrl = sessionStorage.getItem("redirectUrl"); //  /product/상품id 가져오기
+        sessionStorage.removeItem("redirectUrl"); // 삭제
+        if (redirectUrl) {
+          navigate(redirectUrl);
+        } else {
+          navigate("/");
+        }
       })
       .catch(() => {
         setLoading(false); 
       });
   };
+  
   
 
   const handleGoogleLogin = async (googleData) => {

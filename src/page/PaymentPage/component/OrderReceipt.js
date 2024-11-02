@@ -16,7 +16,7 @@ const OrderReceipt = () => {
           <div className="display-flex space-between">
             <div>아이템이름</div>
 
-            <div>₩ 45,000</div>
+            <div>₩ -</div>
           </div>
         </li>
       </ul>

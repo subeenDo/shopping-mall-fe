@@ -7,6 +7,7 @@ import { currencyFormat } from "../../utils/number";
 import "./style/productDetail.style.css";
 import { getProductDetail } from "../../features/product/productSlice";
 import { addToCart } from "../../features/cart/cartSlice";
+import { showToastMessage } from "../../features/common/uiSlice";
 
 const ProductDetail = () => {
   const dispatch = useDispatch();
@@ -18,12 +19,31 @@ const ProductDetail = () => {
   const navigate = useNavigate();
 
   const addItemToCart = () => {
-    //사이즈를 아직 선택안했다면 에러
+    // 사이즈를 아직 선택안했다면 에러
+    if (!size) {
+      setSizeError(true);
+      return;
+    }
     // 아직 로그인을 안한유저라면 로그인페이지로
+    if (!user) {
+      //현재 url저장
+      sessionStorage.setItem("redirectUrl", window.location.pathname);
+      dispatch(
+        showToastMessage({
+          message: "로그인을 먼저 해주세요.",
+          status: "info",
+        })
+      );
+      navigate("/login");
+      return;
+    }
     // 카트에 아이템 추가하기
+    dispatch(addToCart({ id, size, navigate }));
   };
   const selectSize = (value) => {
-    // 사이즈 추가하기
+    // 에러 리셋하고 사이즈 추가하기
+    if (sizeError) setSizeError(false);
+    setSize(value);
   };
 
   useEffect(() => {
@@ -42,11 +62,16 @@ const ProductDetail = () => {
         colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
       />
     );
+
   return (
     <Container className="product-detail-card">
       <Row>
         <Col sm={6}>
-          <img src={selectedProduct.image} className="w-100" alt="image" />
+          <img
+            src={selectedProduct.image}
+            className="w-100"
+            alt={selectedProduct.name}
+          />
         </Col>
         <Col className="product-info-area" sm={6}>
           <div className="product-info">{selectedProduct.name}</div>
