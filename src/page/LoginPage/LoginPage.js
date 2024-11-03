@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -13,6 +13,7 @@ const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loginError } = useSelector((state) => state.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +23,11 @@ const Login = () => {
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (user || token) {
-      navigate("/"); // 이미 로그인한 경우 홈으로 리디렉션
+      const redirectUrl = location.state?.redirectUrl || "/";
+      navigate(redirectUrl);
     }
   }, [user, navigate]);
-  
 
-  
   useEffect(() => {
     if (loginError) {
       dispatch(clearErrors());
@@ -35,20 +35,20 @@ const Login = () => {
   }, [navigate]);
 
   
+  const redirectToLogin = () => {// 로그인 페이지로 리다이렉드 할때 
+    navigate("/login", { state: { redirectUrl: window.location.pathname } });
+  };
+
   const handleLoginWithEmail = (event) => {
     event.preventDefault();
-    setLoading(true); // 로딩 시작
+    setLoading(true);
+
     dispatch(loginWithEmail({ email, password }))
       .unwrap()
       .then(() => {
         setLoading(false); 
-        const redirectUrl = sessionStorage.getItem("redirectUrl"); //  /product/상품id 가져오기
-        sessionStorage.removeItem("redirectUrl"); // 삭제
-        if (redirectUrl) {
-          navigate(redirectUrl);
-        } else {
-          navigate("/");
-        }
+        const redirectUrl = location.state?.redirectUrl || "/";
+        navigate(redirectUrl);
       })
       .catch(() => {
         setLoading(false); 
@@ -56,7 +56,6 @@ const Login = () => {
   };
   
   
-
   const handleGoogleLogin = async (googleData) => {
     //구글 로그인 하기
   };

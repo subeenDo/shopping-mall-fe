@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Container, Row, Col, Button, Dropdown } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { ColorRing } from "react-loader-spinner";
@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const [sizeError, setSizeError] = useState(false);
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const addItemToCart = () => {
     // 사이즈를 아직 선택안했다면 에러
@@ -26,15 +27,13 @@ const ProductDetail = () => {
     }
     // 아직 로그인을 안한유저라면 로그인페이지로
     if (!user) {
-      //현재 url저장
-      sessionStorage.setItem("redirectUrl", window.location.pathname);
       dispatch(
         showToastMessage({
           message: "로그인을 먼저 해주세요.",
           status: "info",
         })
       );
-      navigate("/login");
+      navigate("/login", { state: { redirectUrl: location.pathname } });
       return;
     }
     // 카트에 아이템 추가하기

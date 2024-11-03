@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/user/userSlice";
+import { resetCart } from "../../features/cart/cartSlice";
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
@@ -42,8 +43,17 @@ const Navbar = ({ user }) => {
     const confirmLogout = window.confirm("로그아웃 하시겠습니까?");
     if (confirmLogout) {
       dispatch(logout());
+      dispatch(resetCart());
       window.confirm("로그아웃되었습니다.");
       navigate("/");
+    }
+  };
+
+  const handleCartClick = () => {
+    if (!user) {
+      navigate("/login", { state: { redirectUrl: "/cart" } });
+    } else {
+      navigate("/cart");
     }
   };
   
@@ -105,7 +115,7 @@ const Navbar = ({ user }) => {
                 {!isMobile && <span style={{ cursor: "pointer" }}>로그인</span>}
               </div>
             )}
-            <div onClick={() => navigate("/cart")} className="nav-icon">
+            <div onClick={handleCartClick} className="nav-icon">
               <FontAwesomeIcon icon={faShoppingBag} />
               {!isMobile && (
                 <span style={{ cursor: "pointer" }}>{`쇼핑백(${

@@ -4,17 +4,29 @@ import { Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch } from "react-redux";
 import { currencyFormat } from "../../../utils/number";
-import { updateQty, deleteCartItem } from "../../../features/cart/cartSlice";
+import { updateCartItem, deleteCartItem } from "../../../features/cart/cartSlice";
+
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
 
-  const handleQtyChange = (id, value) => {
-    dispatch(updateQty({ id, value }));
+  const handleSizeChange = (id, size) => {
+    handleUpdateItem(id, 1, size); 
+  };
+
+  const handleQtyChange = (id, qty) => {
+    handleUpdateItem(id, qty, item.size); 
+  };
+  
+  const handleUpdateItem = (id, qty, size) => {
+    dispatch(updateCartItem({ id, qty, size }));
   };
 
   const deleteCart = (id) => {
     dispatch(deleteCartItem(id));
   };
+
+  const availableSizes = Object.keys(item.productId.stock);
+  const maxStock = item.productId.stock[item.size] || 1; 
 
   return (
     <div className="product-card-cart">
@@ -33,34 +45,34 @@ const CartProductCard = ({ item }) => {
               />
             </button>
           </div>
-
           <div>
             <strong>₩ {currencyFormat(item.productId.price)}</strong>
           </div>
-          <div>Size: {item.size}</div>
-          <div>Total: ₩ {currencyFormat(item.productId.price * item.qty)}</div>
-          <div>
-            Quantity:
+          <div className="update-container">
+            <span>Size:</span>
             <Form.Select
-              onChange={(event) =>
-                handleQtyChange(item._id, event.target.value)
-              }
-              required
-              defaultValue={item.qty}
-              className="qty-dropdown"
+              value={item.size}
+              onChange={(event) => handleSizeChange(item._id, event.target.value)}
             >
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
-              <option value={5}>5</option>
-              <option value={6}>6</option>
-              <option value={7}>7</option>
-              <option value={8}>8</option>
-              <option value={9}>9</option>
-              <option value={10}>10</option>
+              {availableSizes.map((size) => (
+                <option key={size} value={size} disabled={item.productId.stock[size] === 0}>
+                  {size}
+                </option>
+              ))}
             </Form.Select>
           </div>
+          <div className="update-container">
+            Quantity:
+            <Form.Control
+              type="number"
+              min={1}
+              max={maxStock}
+              value={item.qty}
+              onChange={(event) => handleQtyChange(item._id, event.target.value)}
+              className="qty-spinner"
+            />
+          </div>
+          <div>Total: ₩ {currencyFormat(item.productId.price * item.qty)}</div>
         </Col>
       </Row>
     </div>

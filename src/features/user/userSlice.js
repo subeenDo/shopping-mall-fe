@@ -1,17 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { showToastMessage } from "../common/uiSlice";
 import api from "../../utils/api";
-import { initialCart } from "../cart/cartSlice";
+import { initialCart, getCartList } from "../cart/cartSlice";
 
 export const loginWithEmail = createAsyncThunk(
   "user/loginWithEmail",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch  }) => {
     try{
       const response = await api.post("/auth/login", {email, password})
       //성공
       //Loginpage
       // 토큰 저장 1.local storage 2.session storage
       sessionStorage.setItem("token", response.data.token);
+      dispatch(initialCart());
+      dispatch(getCartList());
       return response.data;
     }catch(error){
       //실패
