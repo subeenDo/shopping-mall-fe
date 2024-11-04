@@ -108,6 +108,11 @@ const cartSlice = createSlice({
     initialCart: (state) => {
       state.cartItemCount = 0;
     },
+    resetCart: (state) => {
+      state.cartList = [];
+      state.cartItemCount = 0;
+      state.totalPrice = 0;
+    },
     // You can still add reducers here for non-async actions if necessary
   },
   extraReducers: (builder) => {
@@ -159,14 +164,11 @@ const cartSlice = createSlice({
         state.error = '';
       })
       .addCase(getCartQty.fulfilled, (state, action) => {  
-        console.log('fulfilled',);
         state.loading = false;
         state.error = '';
-        console.log('action.payload',action.payload);
         state.cartItemCount = action.payload;
       })
       .addCase(getCartQty.rejected, (state,action)=> {
-        console.log('rejectedd',);
         state.loading = false;
         state.error = action.payload;
       })
