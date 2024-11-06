@@ -35,7 +35,15 @@ const PaymentPage = () => {
 
   useEffect(() => {
     // 오더번호를 받으면 어디로 갈까?
+    if(firstLoading){
+      setFirstLoading(false); //useEffect가 처음 호출될때 오더 성공페이지로 넘어가는거 막기
+    }else{
+      if(orderNum !== "" ){
+        navigate("/payment/success");
+      }
+    }
   }, [orderNum]);
+
 
   const handleSubmit = (event) => {
     event.preventDefault();

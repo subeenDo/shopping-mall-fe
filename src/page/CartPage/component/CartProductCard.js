@@ -9,9 +9,9 @@ import { updateCartItem, deleteCartItem } from "../../../features/cart/cartSlice
 const CartProductCard = ({ item }) => {
   const dispatch = useDispatch();
 
-  const handleSizeChange = (id, size) => {
-    handleUpdateItem(id, 1, size); 
-  };
+  // const handleSizeChange = (id, size) => {
+  //   handleUpdateItem(id, 1, size); 
+  // };
 
   const handleQtyChange = (id, qty) => {
     handleUpdateItem(id, qty, item.size); 
@@ -25,8 +25,8 @@ const CartProductCard = ({ item }) => {
     dispatch(deleteCartItem(id));
   };
 
-  const availableSizes = Object.keys(item.productId.stock);
-  const maxStock = item.productId.stock[item.size] || 1; 
+  // const availableSizes = Object.keys(item.productId.stock);
+  // const maxStock = item.productId.stock[item.size] || 1; 
 
   return (
     <div className="product-card-cart">
@@ -48,7 +48,7 @@ const CartProductCard = ({ item }) => {
           <div>
             <strong>₩ {currencyFormat(item.productId.price)}</strong>
           </div>
-          <div className="update-container">
+          {/* <div className="update-container">
             <span>Size:</span>
             <Form.Select
               value={item.size}
@@ -71,6 +71,23 @@ const CartProductCard = ({ item }) => {
               onChange={(event) => handleQtyChange(item._id, event.target.value)}
               className="qty-spinner"
             />
+          </div> */}
+          <div>사이즈: {item.size}</div>
+              <div>
+                수량:
+                <select
+                  onChange={(event) =>
+                    handleQtyChange(item._id, event.target.value)
+                  }
+                  required
+                  defaultValue={item.qty}
+                >
+                  {[...Array(10)].map((_, index) => (
+                    <option key={`${item._id}-${index}`} value={index + 1}>
+                      {index + 1}
+                    </option>
+                  ))}
+                </select>
           </div>
           <div>Total: ₩ {currencyFormat(item.productId.price * item.qty)}</div>
         </Col>
