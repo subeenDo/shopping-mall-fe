@@ -1,7 +1,7 @@
-import React from "react";
-import { Table, Badge } from "react-bootstrap";
-import { badgeBg } from "../../../constants/order.constants";
-import { currencyFormat } from "../../../utils/number";
+import React from 'react';
+import { Table, Badge } from 'react-bootstrap';
+import { badgeBg } from '../../../constants/order.constants';
+import { currencyFormat } from '../../../utils/number';
 
 const OrderTable = ({ header, data, openEditForm }) => {
   return (
@@ -9,15 +9,15 @@ const OrderTable = ({ header, data, openEditForm }) => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            {header.map((title) => (
-              <th>{title}</th>
+            {header.map((title, index) => (
+              <th key={index}>{title}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {data.length > 0 ? (
             data.map((item, index) => (
-              <tr onClick={() => openEditForm(item)}>
+              <tr onClick={() => openEditForm(item)} key={index}>
                 <th>{index}</th>
                 <th>{item.orderNum}</th>
                 <th>{item.createdAt.slice(0, 10)}</th>
@@ -31,7 +31,7 @@ const OrderTable = ({ header, data, openEditForm }) => {
                   <th></th>
                 )}
 
-                <th>{item.shipTo.address + " " + item.shipTo.city}</th>
+                <th>{item.shipTo.address + ' ' + item.shipTo.city}</th>
 
                 <th>{currencyFormat(item.totalPrice)}</th>
                 <th>
@@ -40,7 +40,9 @@ const OrderTable = ({ header, data, openEditForm }) => {
               </tr>
             ))
           ) : (
-            <tr>No Data to show</tr>
+            <tr>
+              <td colSpan={header.length}>No Data to show</td>
+            </tr>
           )}
         </tbody>
       </Table>
