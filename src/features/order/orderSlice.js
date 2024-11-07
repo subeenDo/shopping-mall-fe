@@ -23,9 +23,11 @@ export const createOrder = createAsyncThunk(
       dispatch(getCartQty());
       return res.data.orderNum;
     } catch (error) {
-      console.log('Error response:', error?.response);
+      //console.log('Error response:', error?.response);
       // 오류 메시지가 서버에서 반환한 message에 있다면 그 메시지를 사용
-      const errorMessage = error?.response?.data?.message || error?.message || "정확한 재고 부족 원인을 확인할 수 없습니다.";
+      const errorMessage = error?.response?.data?.message 
+      || error?.message 
+      || "재고가 부족합니다.";
       
       // 정확한 오류 메시지 사용자에게 표시
       dispatch(showToastMessage({ status: 'error', message: errorMessage }));
