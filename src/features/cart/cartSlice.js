@@ -17,8 +17,6 @@ export const addToCart = createAsyncThunk(
     try{
       const response = await api.post("/cart", { productId:id, size, qty:1});
 
-      if (response.status !== 200) throw new Error(response.error);
-
       const userResponse = window.confirm("카트에 아이템이 추가되었습니다. 장바구니로 이동하시겠습니까?");
       if (userResponse) {
         navigate("/cart"); 
@@ -44,7 +42,6 @@ export const getCartList = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get("/cart");
-      if (response.status !== 200) throw new Error(response.error);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.error);
@@ -57,8 +54,6 @@ export const deleteCartItem = createAsyncThunk(
   async (id, { rejectWithValue, dispatch }) => {
     try{
       const response = await api.delete(`/cart/${id}`);
-      if (response.status !== 200) throw new Error(response.error);
-      
       dispatch(showToastMessage({ message: "Success delete Item", status: "success" }));
       dispatch(getCartQty());  
       dispatch(getCartList());  
@@ -77,7 +72,6 @@ export const updateCartItem = createAsyncThunk(
   async ({ id, qty, size }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.put(`/cart/${id}`, { qty, size });
-      if (response.status !== 200) throw new Error(response.error);
       dispatch(getCartQty());
       dispatch(getCartList()); 
       return response.data.data;
@@ -92,14 +86,17 @@ export const getCartQty = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get('/cart/cartItemQty');
-      if(response.status !== 200) throw new Error(response.error);
-      else return response.data.qty;
+
+      return response.data.qty;
     } catch (error) {
-      dispatch(showToastMessage(error.error || 'An error occurred', "error"));
+      console.error("장바구니 아이템 개수 가져오기 오류:", error); 
+      dispatch(showToastMessage(error.error || '오류가 발생했습니다', "error"));
       return rejectWithValue(error.error);
     }
   }
 );
+
+
 
 const cartSlice = createSlice({
   name: "cart",
@@ -159,7 +156,6 @@ const cartSlice = createSlice({
         state.success = false;
       })
       .addCase(getCartQty.pending, (state) => {
-        console.log('pending',);
         state.loading = true;
         state.error = '';
       })
